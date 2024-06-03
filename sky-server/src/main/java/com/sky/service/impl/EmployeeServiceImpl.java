@@ -68,13 +68,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * 新增员工
+     *
      * @param employeeDTO
      */
     public void save(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
 
         //拷贝属性
-        BeanUtils.copyProperties(employeeDTO,employee);
+        BeanUtils.copyProperties(employeeDTO, employee);
 
         //设置状态
         employee.setStatus(StatusConstant.ENABLE);
@@ -94,15 +95,42 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeMapper.insert(employee);
     }
 
+    /**
+     * 分页查询
+     *
+     * @param employeePageQueryDTO
+     * @return
+     */
     @Override
     public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
-        PageHelper.startPage(employeePageQueryDTO.getPage(),employeePageQueryDTO.getPageSize());
+        PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());
 
         Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);
 
         long total = page.getTotal();
         List<Employee> records = page.getResult();
 
-        return new PageResult(total,records);
+        return new PageResult(total, records);
+    }
+
+    /**
+     * 启用与禁用员工账号
+     *
+     * @param status
+     * @param id
+     */
+    @Override
+    public void startOrStop(Integer status, Long id) {
+
+        /*Employee employee = new Employee();
+        employee.setId(id);
+        employee.setStatus(status);*/
+
+        Employee employee = Employee.builder()
+                .status(status)
+                .id(id)
+                .build();
+
+        employeeMapper.update(employee);
     }
 }
